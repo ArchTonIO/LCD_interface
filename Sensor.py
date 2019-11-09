@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 import time
 
-
 GPIO_TRIGGER = 23
 GPIO_ECHO = 24
 
@@ -67,7 +66,6 @@ class Sensor:
         # and divide by 2, because there and back
         distance = (TimeElapsed * 34300) / 2
         return distance
-
 
 def TestSensor():
     while True:
