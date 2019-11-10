@@ -1,13 +1,7 @@
-import socket
-import fcntl
-import struct
-import netifaces as ni
-from time import sleep
-import I2C_LCD_driver
-from  Rotary import *
-from LCDscreen import *
+from platforms.printer3d.rotary_encoder_driver import *
+from core.LCDscreen import *
 from RPi import GPIO
-from Sensor import *
+from platforms.printer3d.distance_sensor_driver import *
 #temporary variables
 sensorState = 1 #state of distance sensor
 plateTemp = 43 #heatbed temperature

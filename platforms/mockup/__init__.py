@@ -1,37 +1,36 @@
 """
-    This script provides a mock-up GUI that simulates the physical input/output interface
-    of the 3d printer, with the purpose of testing other modules without having
-    the actual printer's hardware available.
+    This package provides a mock-up GUI that simulates the input/output interface
+    of the physical 3d printer, with the purpose of testing other modules without
+    requiring the actual printer platform to be connected.
 
     NOTE: this is my best attempt to execute a QApplication outside the main thread (which is usually
           not recommended by Qt) that keeps automatically updating in response of the main thread calls.
           This was necessary since for non-mockup platforms, the platform itself is supposed to be
           controlled by the main thread, and not the opposite.
-
-    NOTE 2: not quite sure about thread-safety of the global context.
-
 """
 
-import threading
-from time import sleep
+from threading import Thread, Lock
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+__mutex = Lock()           # mutex must be acquired before read/write any of the following
+                            # global context variables
+
+__is_view_updated = True  # flag that represents if the GUI view needs to be updated
+
 # display state variables #
-__DISPLAY_SIZE   = (4, 20)  # display size in (rows, columns)
-__display_cursor = (0,  0)  # display cursor coordinates in (row, column)
+__DISPLAY_SIZE_ROWS    = 4
+__DISPLAY_SIZE_COLUMNS = 20
 __display_string = ""
 __display_backlighting = True
+__display_custom_chars = []
 
 # rotary encoder state variables #
 # todo ...
 
 # sonar sensor state variables #
-# todo ...
-
-# global context lock
 # todo ...
 
 # internal function that initializes the GUI via Qt libraries.
@@ -53,6 +52,7 @@ def __async_exec_gui__():
     font.setFamily("Courier")
     display.setFont(font)
     display.setPlainText("")
+    display.setStyleSheet("background-color: rgb(255, 255, 255);")
 
     # rotary encoder
     rotary_left   = QPushButton('<-')
@@ -70,11 +70,26 @@ def __async_exec_gui__():
 
     # function that updates the view according to the various state variables
     def update_view():
+        global __mutex, __is_view_updated
         global __display_cursor, __display_string, __display_backlighting
 
-        # todo incomplete ...
+        __mutex.acquire()
 
-        display.setPlainText(__display_string)
+        # update view (display's text & backlighting)
+        if not __is_view_updated:
+
+            display.setPlainText(__display_string)
+
+            # todo: string formatting
+
+            if __display_backlighting:
+                display.setStyleSheet("background-color: rgb(255, 255, 255);")
+            else:
+                display.setStyleSheet("background-color: rgb(0, 0, 0);")
+
+        __is_view_updated = True
+
+        __mutex.release()
         return
 
     # create timer for continuous updates during the event loop
@@ -87,24 +102,43 @@ def __async_exec_gui__():
     return
 
 
-# initializes platform
-def initialize_platform():
+# initializes interface
+def initialize():
 
     # initialize and execute gui in side thread
-    x = threading.Thread(target=__async_exec_gui__, args=())
+    x = Thread(target=__async_exec_gui__, args=())
     x.start()
+
     return
 
-# ...
-def display_write(s):
-    global __display_string
-    __display_string = s
-    # todo incomplete ...
+
+def set_display_text(s):
+    global __mutex, __is_view_updated, __display_string
+
+    __mutex.acquire()
+
+    if __display_string != s:
+        __display_string = s
+        __is_view_updated = False
+
+    __mutex.release()
+    return
 
 def display_clear(string):
-    global __display_string
-    __display_string = ""
-    # todo incomplete ...
+    set_display_text("")
+    return
+
+def set_display_backlighting(value):
+    global __mutex, __is_view_updated, __display_backlighting
+
+    __mutex.acquire()
+
+    if __display_backlighting != value:
+        __display_backlighting = value
+        __is_view_updated = False
+
+    __mutex.release()
+    return
 
 def set_on_rotary_left_callback(callback):
     # todo ...

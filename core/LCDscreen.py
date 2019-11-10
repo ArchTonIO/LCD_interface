@@ -1,9 +1,6 @@
-import socket
-import fcntl
-import struct
 import netifaces as ni
 import time
-import I2C_LCD_driver
+from platforms.printer3d import I2C_LCD_driver
 
 fontdata0 = [
 
