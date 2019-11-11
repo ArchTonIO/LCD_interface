@@ -42,9 +42,35 @@ class Menu:#to create a menu with an input string list
                 mylcd.lcd_display_string(x, i,0)#i = raws, 0 = columns
                 i = i+1
     def displayPointer(self, pointer):
+        OutOfIndexState = 0
         mylcd.lcd_load_custom_chars(fontdata0)
+
+
+        if pointer < 0:
+            pointer = 0
+            OutOfIndexState = +1
+
+        if pointer > 3:
+            pointer = 3
+            OutOfIndexState = -1
+
         mylcd.lcd_write(displayPosition[pointer])
         mylcd.lcd_write_char(6)
+        return OutOfIndexState
+
+    def run(self, pointer):
+        self.display()
+        self.displayPointer(pointer)
+
+    def read(self, btnState, pointer):#return encoder button status on the current raw(using pointer)
+        state = -1
+
+        if btnState == 0:
+            state = pointer
+        else:
+            state = -1
+
+        return state
 
 class SquareImage:#to create the different square simbol, take type for the component type and state for its state
     def __init__(self, type, state):
