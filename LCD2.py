@@ -93,7 +93,15 @@ class Menu:#to create a menu with an input string list
         state = -1
 
         if btnState == 0:
-            state = cursor
+            if cursor > len(self.list):   #se la posizione del cursore eccede la lunghezza della lista iniziale, allora lo stato,
+                state = len(self.list) - 1#ovvero la scelta dell'utente, sarà l'ultima riga della lista
+
+            if cursor < 0:#se la posizione del cursore va sotto lo 0, allora lo stato,
+                state = 0 #ovvero la scelta dell'utente, sarà la prima riga della lista
+
+            else:
+                state = cursor
+
         else:
             state = -1
 
@@ -181,7 +189,14 @@ class DynamicMenu:
         state = -1
 
         if btnState == 0:
-            state = cursor
+            if cursor > len(self.staticList):   #se la posizione del cursore eccede la lunghezza della lista statica, allora lo stato,
+                state = len(self.staticList) - 1#ovvero la scelta dell'utente, sarà l'ultima riga della lista
+
+            if cursor < 0:#se la posizione del cursore va sotto lo 0, allora lo stato,
+                state = 0 #ovvero la scelta dell'utente, sarà la prima riga della lista
+
+            else:
+                state = cursor
         else:
             state = -1
 
@@ -200,7 +215,7 @@ class SquareImage:#to create the different square simbol, take type for the comp
         self.state = state
 
     def display(self):
-        if(self.state == "ON" and self.type == "printer" ):
+        if(self.state == "ON " and self.type == "printer" ):
             mylcd.lcd_load_custom_chars(fontdata0) #display the rectangle with the "P" letter inside
             mylcd.lcd_write(0x81)
             mylcd.lcd_write_char(0)
@@ -229,7 +244,7 @@ class SquareImage:#to create the different square simbol, take type for the comp
             mylcd.lcd_write_char(1)
             mylcd.lcd_write_char(1)
             mylcd.lcd_write_char(1)
-        if (self.state == "ON" and self.type == "light"):
+        if (self.state == "ON " and self.type == "light"):
             mylcd.lcd_load_custom_chars(fontdata0)#display the rectangle with the "L" letter inside
             mylcd.lcd_write(0x86)
             mylcd.lcd_write_char(0)
@@ -258,7 +273,7 @@ class SquareImage:#to create the different square simbol, take type for the comp
             mylcd.lcd_write_char(1)
             mylcd.lcd_write_char(1)
             mylcd.lcd_write_char(1)
-        if (self.state == "ON" and self.type == "cam"):
+        if (self.state == "ON " and self.type == "cam"):
             mylcd.lcd_load_custom_chars(fontdata0)#display the rectangle with the "C" letter inside
             mylcd.lcd_write(0x8B)
             mylcd.lcd_write_char(0)
@@ -287,7 +302,7 @@ class SquareImage:#to create the different square simbol, take type for the comp
             mylcd.lcd_write_char(1)
             mylcd.lcd_write_char(1)
             mylcd.lcd_write_char(1)
-        if (self.state == "ON" and self.type == "buzzer"):
+        if (self.state == "ON " and self.type == "buzzer"):
             mylcd.lcd_load_custom_chars(fontdata0)#display the rectangle with the "B" letter inside
             mylcd.lcd_write(0x90)
             mylcd.lcd_write_char(0)
